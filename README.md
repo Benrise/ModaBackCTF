@@ -45,3 +45,22 @@ uvicorn main:app --reload
 --- Остановка сервера ---:
 
 exit()
+
+--- Установка пакетов для БД (venv) ---
+
+Для Linux & MacOS:
+pip install sqlalchemy alembic psycopg2-binary
+
+Для Windows:
+pip install sqlalchemy alembic psycopg2
+
+--- Миграция ---
+
+Инициализация для Linux & MacOS & Windows PowerShell:
+alembic init migrations:
+
+Создание ревизии (подготовка будущей миграции):
+alembic revision --autogenerate -m "Database init creation"
+
+Миграция:
+alembic upgrade <номер ревизии>
