@@ -64,3 +64,12 @@ alembic revision --autogenerate -m "Database init creation"
 
 Миграция:
 alembic upgrade <номер ревизии>
+
+Переключение на последнюю версию:
+alembic upgrade head
+
+--- FastAPI Users ---
+
+Для СУБД PostgreSQL (venv):
+pip install 'fastapi-users[sqlalchemy]'
+pip install asyncpg
