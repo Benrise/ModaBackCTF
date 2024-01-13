@@ -34,7 +34,10 @@ deactivate
 deactivate
 rm -r venv
 
---- Установка библиотек ---
+--- Установка всех пакетов --
+pip install -r requirements.txt
+
+--- Установка библиотек (отдельно) ---
 
 python3.11 -m pip install fastapi[all]
 
@@ -46,13 +49,10 @@ uvicorn main:app --reload
 
 exit()
 
---- Установка пакетов для БД (venv) ---
+--- Установка пакетов для БД (отдельно) ---
 
-Для Linux & MacOS:
-pip install sqlalchemy alembic psycopg2-binary
-
-Для Windows:
-pip install sqlalchemy alembic psycopg2
+Для Linux & MacOS & Windows:
+pip install sqlalchemy alembic
 
 --- Миграция ---
 
@@ -70,6 +70,6 @@ alembic upgrade head
 
 --- FastAPI Users ---
 
-Для СУБД PostgreSQL (venv):
+Для СУБД PostgreSQL (отдельно):
 pip install 'fastapi-users[sqlalchemy]'
 pip install asyncpg
