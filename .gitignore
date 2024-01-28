@@ -15,6 +15,8 @@ log.txt
 Pipfile.lock
 env3.*
 .env
+.env.local
+.env.*.local
 docs_build
 site_build
 venv
@@ -28,3 +30,27 @@ archive.zip
 
 # macOS
 .DS_Store
+
+.DS_Store
+node_modules
+/dist
+/docs
+/tests/e2e/videos/
+/tests/e2e/screenshots/
+*.http
+.husky
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
