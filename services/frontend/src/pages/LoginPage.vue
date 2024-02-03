@@ -10,7 +10,7 @@
     
         <form @submit.prevent="onSubmit">
             <label for="email" class="block text-900 font-medium mb-2">Почта</label>
-            <InputText :class="{ 'p-invalid': emailErrorMessage}" v-model="emailValue" id="email" type="text" class="w-full border-round-xl" />
+            <InputText :class="{ 'p-invalid': emailErrorMessage }" v-model="emailValue" id="email" type="text" class="w-full border-round-xl" />
             <small class="p-error text-xs">
                 {{ emailErrorMessage || '&nbsp;'}}
             </small>
