@@ -50,20 +50,32 @@ export const useUserStore = defineStore("user", {
           return status.value;
         },
         async signIn(email, password) {
+          const status = ref(false);
           const formData = new FormData();
           formData.set('username', email);
           formData.set('password', password);
-          axios.post('auth/jwt/login', formData, {
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            },
-          }).then((response) => {
+          try {
+            const response = await axios.post('auth/jwt/login', formData, {
+              headers: {
+                'Content-Type': 'multipart/form-data',
+              },
+            })
+
             if (response.status === StatusCodes.NO_CONTENT) {
               this.fetchUser()
-              this.isLoggedIn = true;
               router.push('/')
+              this.isLoggedIn = true;
+              status.value = true;
             }
-          })
+            else {
+              status.value = false;
+            }
+          } catch (error) {
+            console.log(error)
+            this.errorDetail = error.response?.data.detail || "Неизвестная ошибка"
+            status.value = false;
+          }
+          return status.value;
         },
         async signOut() {
           axios.post('auth/jwt/logout');
