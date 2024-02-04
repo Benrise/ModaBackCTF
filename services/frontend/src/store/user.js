@@ -9,7 +9,7 @@ export const useUserStore = defineStore("user", {
         user: null,
         isLoggedIn: false,
         errorDetail: '',
-        avatarURL: ''
+        avatarURL: '',
     }),
     actions: {
         async fetchUser() {
@@ -94,9 +94,11 @@ export const useUserStore = defineStore("user", {
               router.push('/')
             } else {
               this.resetState()
+              router.push('/')
             }
           } catch (error) {
             this.resetState()
+            router.push('/')
             console.error()
           }
         },
@@ -108,6 +110,7 @@ export const useUserStore = defineStore("user", {
               data = response.data
             }
           } catch (error) {
+            checkAuth()
             console.error(error)
           }
           finally {
