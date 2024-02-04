@@ -1,6 +1,7 @@
 import boto3
 from fastapi import HTTPException, status
 from config import settings
+from botocore.exceptions import ClientError
 
 def s3_upload(content: bytes, key: str):
     session = boto3.Session()
@@ -53,3 +54,29 @@ def list_objects_in_bucket():
             print(f"Object Key: {obj['Key']}")
     except Exception as e:
         print(f"Error: {e}")
+        
+def generate_presigned_url(object_key, expiration_time=7200, session=None):
+    bucket_name = settings.YANDEX_S3_BUCKET_NAME
+
+    if session is None:
+        session = boto3.Session()
+
+    s3 = session.client('s3', 
+            endpoint_url='https://storage.yandexcloud.net',
+            aws_access_key_id=settings.YANDEX_S3_ACCESS_KEY_ID,
+            aws_secret_access_key=settings.YANDEX_S3_SECRET_ACCESS_KEY
+    )
+
+    try:
+        url = s3.generate_presigned_url(
+            'get_object',
+            Params={
+                'Bucket': bucket_name,
+                'Key': object_key
+            },
+            ExpiresIn=expiration_time
+        )
+        return url
+    except ClientError as e:
+        print(f"Error generating presigned URL: {e}")
+        return None

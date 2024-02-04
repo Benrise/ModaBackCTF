@@ -20,7 +20,7 @@
                     </span>
                     <RouterLink to="/profile">
                         <Button size="small" outlined rounded class="border-2">
-                            <Avatar size="large" image="/images/avatar/default-avatar.png" shape="circle" />
+                            <Avatar size="large" :image="userStore.avatarURL" class="pointer-events-none select-none" shape="circle" />
                         </Button>
                     </RouterLink>
                     <Button :onClick="logout" rounded text icon="pi pi-sign-out"/>
@@ -38,7 +38,7 @@ import Avatar from 'primevue/avatar';
 import Button from 'primevue/button'
 
 import { RouterLink } from 'vue-router'
-import { ref, computed } from "vue";
+import { onMounted, ref, computed } from "vue";
 import { useUserStore } from "@/store/user";
 
 const userStore = useUserStore()

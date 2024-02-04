@@ -3,7 +3,7 @@
         <Panel >
             <template #header>
                 <div class="flex w-full align-items-center flex-column gap-5">
-                    <Avatar class="w-20rem h-20rem border-circle overflow-hidden" image="/images/avatar/default-avatar.png" size="xlarge" alt="Avatar"/>
+                    <Avatar class="w-20rem h-20rem border-circle overflow-hidden pointer-events-none select-none" :image="userStore.avatarURL" size="xlarge" alt="Avatar"/>
                     <span class="flex flex-row gap-1">
                         <FileUpload chooseLabel="Загрузить" mode="basic" name="demo[]" url="/api/upload" accept="image/*" :maxFileSize="1000000" @upload="onUpload"/>
                         <Button v-if="false" outlined icon="pi pi-times"/>
@@ -46,4 +46,7 @@ import InputGroup from 'primevue/inputgroup';
 import InputText from 'primevue/inputtext';
 import Password from 'primevue/password';
 import Panel from 'primevue/panel';
+
+import { useUserStore } from "@/store/user";
+const userStore = useUserStore()
 </script>

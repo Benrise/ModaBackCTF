@@ -8,7 +8,8 @@ export const useUserStore = defineStore("user", {
     state: () => ({
         user: null,
         isLoggedIn: false,
-        errorDetail: ''
+        errorDetail: '',
+        avatarURL: ''
     }),
     actions: {
         async fetchUser() {
@@ -63,6 +64,7 @@ export const useUserStore = defineStore("user", {
 
             if (response.status === StatusCodes.NO_CONTENT) {
               this.fetchUser()
+              this.getImage()
               router.push('/')
               this.isLoggedIn = true;
               status.value = true;
@@ -88,6 +90,7 @@ export const useUserStore = defineStore("user", {
             if (response.status === StatusCodes.OK) {
               this.user = response.data;
               this.isLoggedIn = true;
+              this.getImage()
               router.push('/')
             } else {
               this.resetState()
@@ -95,6 +98,20 @@ export const useUserStore = defineStore("user", {
           } catch (error) {
             this.resetState()
             console.error()
+          }
+        },
+        async getImage() {
+          let data = '/images/avatar/default-avatar.png';
+          try {
+            const response = await axios.get('/user/image');
+            if (response.status === StatusCodes.OK) {
+              data = response.data
+            }
+          } catch (error) {
+            console.error(error)
+          }
+          finally {
+            this.avatarURL = data
           }
         },
     }

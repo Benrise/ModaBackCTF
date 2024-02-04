@@ -15,7 +15,7 @@ from auth.base_config import current_user
 from config import settings
 
 from database import get_async_session
-from s3 import s3_get_object, s3_upload
+from s3 import generate_presigned_url, s3_upload
 
 router = APIRouter(
     tags=["user"],
@@ -27,7 +27,7 @@ def get_current_user(user: User = Depends(current_user)):
     user.registered_at = datetime.strftime(user.registered_at, "%m/%d/%Y, %H:%M:%S")
     return user
 
-@router.get("/images")
+@router.get("/image")
 async def get_latest_user_image(user: User = Depends(current_user), session: AsyncSession = Depends(get_async_session)):
     query = select(image.c.file_key).where(image.c.user_id == user.id).order_by(desc(image.c.date_uploaded)).limit(1)
     result = await session.execute(query)
@@ -40,10 +40,10 @@ async def get_latest_user_image(user: User = Depends(current_user), session: Asy
         )
     
     image_key = first_result.file_key
-    response = s3_get_object(image_key)
-    return f'image: {response}'
+    presigned_url = generate_presigned_url(image_key)
+    return presigned_url
 
-@router.post("/images")
+@router.post("/image")
 async def upload(file: UploadFile = None, user: User = Depends(current_user), session: AsyncSession = Depends(get_async_session)):
     if not file:
         raise HTTPException(
