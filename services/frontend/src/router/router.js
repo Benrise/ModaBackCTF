@@ -27,6 +27,7 @@ const routes = [
         path: '/profile',
         name: 'Profile',
         component: ProfilePage,
+        meta: { requiresAuth: true },
     },
     { path: '/:pathMatch(.*)*', redirect: '/' }
 ]

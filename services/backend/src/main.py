@@ -1,6 +1,6 @@
 from datetime import datetime as dt
-from fastapi import Depends, FastAPI, Response
-from fastapi.responses import RedirectResponse
+from uuid import uuid4
+from fastapi import Depends, FastAPI, HTTPException, UploadFile, status
 from fastapi_users import FastAPIUsers
 
 from auth.base_config import auth_backend, fastapi_users, current_user
@@ -9,6 +9,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from auth.models import User, UserOut
 from auth.manager import get_user_manager
+from config import settings
+from s3 import s3_upload
 
 origins = [
     "http://localhost:8080",
@@ -57,3 +59,35 @@ def protected_route(user: User = Depends(current_user)):
 @app.get("/")
 def home():
     return "Hello, CTF Competitor!"
+
+@app.post('/upload')
+async def upload(file: UploadFile = None):
+    if not file:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail='No file to upload'
+        )
+        
+    content = await file.read()
+    file_size = len(content)
+    
+    if not 0 < file_size <= 1024*1024:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail='Uploaded file is too big. Supported size is 0 - 1 MB'
+        )
+        
+    content_type = file.content_type
+        
+    if content_type not in settings.SUPPORTED_FILE_TYPES:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail='Unsupported file type. Supported types are JPEG, PNG, and PDF'
+        )
+        
+    uuid = uuid4()
+         
+    s3_upload(content=content, key=f'{uuid()}.{settings.SUPPORTED_FILE_TYPES[content_type]}')
+        
+#https://www.youtube.com/watch?v=727l8Asu8P0?t=5:00
+#Уязвимость можно создать, если узнавать расширение файла из его названия 

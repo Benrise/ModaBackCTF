@@ -20,7 +20,7 @@
                     </span>
                     <RouterLink to="/profile">
                         <Button size="small" outlined rounded class="border-2">
-                            <Avatar size="large" image="/images/avatar/avatar.png" shape="circle" />
+                            <Avatar size="large" image="/images/avatar/default-avatar.png" shape="circle" />
                         </Button>
                     </RouterLink>
                     <Button :onClick="logout" rounded text icon="pi pi-sign-out"/>
