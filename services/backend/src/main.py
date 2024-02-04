@@ -1,4 +1,4 @@
-from datetime import datetime as dt
+from datetime import datetime
 from uuid import uuid4
 from fastapi import Depends, FastAPI, HTTPException, UploadFile, status
 from fastapi_users import FastAPIUsers
@@ -7,11 +7,18 @@ from auth.base_config import auth_backend, fastapi_users, current_user
 from auth.schemas import UserRead, UserCreate
 from fastapi.middleware.cors import CORSMiddleware
 
+from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import Depends
+
+from database import get_async_session
+
 from auth.models import User
 from auth.schemas import UserOut
 from auth.manager import get_user_manager
 from config import settings
 from s3 import s3_upload
+from images.utils import create_image_record
+from images.schemas import ImageCreate
 
 origins = [
     "http://localhost:8080",
@@ -54,7 +61,7 @@ app.add_middleware(
 
 @app.get("/user", response_model=UserOut)
 def protected_route(user: User = Depends(current_user)):
-    user.registered_at = dt.strftime(user.registered_at, "%m/%d/%Y, %H:%M:%S")
+    user.registered_at = datetime.strftime(user.registered_at, "%m/%d/%Y, %H:%M:%S")
     return user
 
 @app.get("/")
@@ -62,7 +69,7 @@ def home():
     return "Hello, CTF Competitor!"
 
 @app.post('/upload')
-async def upload(file: UploadFile = None):
+async def upload(file: UploadFile = None, user: User = Depends(current_user), session: AsyncSession = Depends(get_async_session)):
     if not file:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -86,9 +93,20 @@ async def upload(file: UploadFile = None):
             detail='Unsupported file type. Supported types are JPEG, PNG, and PDF'
         )
         
-    uuid = uuid4()
-         
-    s3_upload(content=content, key=f'{uuid()}.{settings.SUPPORTED_FILE_TYPES[content_type]}')
+    image_id = uuid4()
+    await create_image_record(
+        new_image=ImageCreate(
+            user_id=user.id,
+            file_key=f'{image_id}.{settings.SUPPORTED_FILE_TYPES[content_type]}',
+            content_type=content_type,
+            file_size=file_size,
+            date_uploaded=datetime.utcnow()
+        ),
+        session = session
+    )
+    
+    s3_upload(content=content, key=f'{image_id}.{settings.SUPPORTED_FILE_TYPES[content_type]}')
+    return {"status": "success"}
         
 #https://www.youtube.com/watch?v=727l8Asu8P0?t=5:00
-#Уязвимость можно создать, если узнавать расширение файла из его названия 
+#Уязвимость можно создать, если узнавать расширение файла из его названия
