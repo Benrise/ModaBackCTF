@@ -7,7 +7,8 @@ from auth.base_config import auth_backend, fastapi_users, current_user
 from auth.schemas import UserRead, UserCreate
 from fastapi.middleware.cors import CORSMiddleware
 
-from auth.models import User, UserOut
+from auth.models import User
+from auth.schemas import UserOut
 from auth.manager import get_user_manager
 from config import settings
 from s3 import s3_upload
