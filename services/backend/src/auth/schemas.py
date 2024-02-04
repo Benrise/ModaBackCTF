@@ -24,6 +24,7 @@ class UserUpdate(schemas.BaseUserUpdate):
     pass
 
 class UserOut(BaseModel):
+    id: int
     email: str
     username: str
     registered_at: str

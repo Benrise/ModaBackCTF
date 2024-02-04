@@ -4,6 +4,7 @@ from fastapi import Depends, FastAPI, HTTPException, UploadFile, status
 from fastapi_users import FastAPIUsers
 
 from auth.base_config import auth_backend, fastapi_users, current_user
+from images.router import router as router_image
 from auth.schemas import UserRead, UserCreate
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -33,6 +34,8 @@ fastapi_users = FastAPIUsers[User, int](
     get_user_manager,
     [auth_backend]
 )
+
+app.include_router(router_image)
 
 app.include_router(
     fastapi_users.get_auth_router(auth_backend),
