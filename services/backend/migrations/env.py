@@ -15,7 +15,7 @@ load_dotenv('./env/dev/.env', override=True)
 
 from src.config import settings
 from src.auth.models import metadata as metadata_auth
-from src.images.models import metadata as metadata_image
+from src.user.models import metadata as metadata_image
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

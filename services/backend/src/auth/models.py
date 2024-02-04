@@ -1,8 +1,7 @@
 from datetime import datetime
 
 from fastapi_users_db_sqlalchemy import SQLAlchemyBaseUserTable
-from pydantic import BaseModel
-from sqlalchemy import Table, Column, Integer, String, TIMESTAMP, Boolean, MetaData, ForeignKey
+from sqlalchemy import Table, Column, Integer, String, TIMESTAMP, Boolean, MetaData
 
 from database import Base
 

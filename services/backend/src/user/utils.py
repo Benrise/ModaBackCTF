@@ -1,8 +1,8 @@
-from images.schemas import ImageCreate
+from user.schemas import ImageCreate
 from sqlalchemy import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from images.models import image
+from user.models import image
 
 
 async def create_image_record(new_image: ImageCreate, session: AsyncSession):
