@@ -1,10 +1,10 @@
 from typing import Optional
 from fastapi_users import schemas
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel
 
 class UserRead(schemas.BaseUser[int]):
     id: int
-    email: EmailStr
+    email: str
     username: str
     is_active: bool = True
     is_superuser: bool = False
@@ -12,7 +12,7 @@ class UserRead(schemas.BaseUser[int]):
 
 class UserCreate(schemas.BaseUserCreate):
     username: str
-    email: EmailStr
+    email: str
     password: str
     is_active: Optional[bool] = True
     is_superuser: Optional[bool] = False
@@ -28,6 +28,6 @@ class UserOut(BaseModel):
     registered_at: str
     
 class UserUpdate(BaseModel):
-    email: Optional[EmailStr] = None
+    email: Optional[str] = None
     username: Optional[str] = None
     password: Optional[str] = None
