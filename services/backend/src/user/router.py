@@ -2,6 +2,7 @@ from datetime import datetime
 from uuid import uuid4
 
 from fastapi import Depends, HTTPException, UploadFile, status, APIRouter
+from fastapi_users import schemas
 from sqlalchemy import desc, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -9,7 +10,8 @@ from user.models import image
 from user.utils import create_image_record
 from user.schemas import ImageCreate
 from auth.models import User
-from auth.schemas import UserOut
+from auth.manager import UserManager, get_user_manager
+from auth.schemas import UserOut, UserUpdate
 from auth.base_config import current_user
 
 from config import settings
@@ -26,6 +28,15 @@ router = APIRouter(
 def get_current_user(user: User = Depends(current_user)):
     user.registered_at = datetime.strftime(user.registered_at, "%m/%d/%Y, %H:%M:%S")
     return user
+
+@router.put("/update", response_model=UserUpdate)
+async def update_user(
+    user_update: UserUpdate,
+    current_user: User = Depends(current_user),
+    user_manager: UserManager = Depends(get_user_manager),
+):
+    updated_user = await user_manager.update(user_update, current_user)
+    return updated_user
 
 @router.get("/image")
 async def get_latest_user_image(user: User = Depends(current_user), session: AsyncSession = Depends(get_async_session)):

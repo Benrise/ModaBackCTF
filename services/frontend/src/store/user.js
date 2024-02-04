@@ -28,7 +28,6 @@ export const useUserStore = defineStore("user", {
         },
         async signUp(username, email, password) {
           const status = ref(false);
-        
           try {
             const response = await axios.post('auth/register', {
               username: username,
@@ -116,6 +115,32 @@ export const useUserStore = defineStore("user", {
           finally {
             this.avatarURL = data
           }
+        },
+        async update(email, username, password) {
+          const status = ref(false);
+          const data = {
+            email: email,
+            username: username,
+            password: password
+          };
+        
+          try {
+            const response = await axios.put('/user/update', data);
+            if (response.status === StatusCodes.OK) {
+              this.user = response.data;
+              status.value = true;
+              this.fetchUser()
+            } else {
+              console.error('Failed to update user:', response.data);
+              this.errorDetail = error.response?.data.detail || "Неизвестная ошибка"
+              status.value = false;
+            }
+          } catch (error) {
+            console.error('Error while updating user:', error);
+            status.value = false;
+          }
+        
+          return status.value;
         },
     }
 })

@@ -59,8 +59,8 @@
                 </Fieldset>
                 <template #footer>
                     <div class="flex gap-3 mt-1">
-                        <Button label="Отменить" severity="secondary" :disabled="true" outlined class="w-full" />
-                        <Button label="Сохранить" type="submit" :disabled="false" :loading="loading" class="w-full" />
+                        <Button label="Отменить" severity="secondary" @click="setInitialValues" :disabled="!isNotEdited" outlined class="w-full" />
+                        <Button label="Сохранить" type="submit" :disabled="!isNotEdited" :loading="loading" class="w-full" />
                     </div>
                 </template>
             </Panel>
@@ -84,7 +84,7 @@ import { useUserStore } from "@/store/user";
 import { useField, useForm } from 'vee-validate';
 import { useToast } from 'primevue/usetoast';
 import * as Yup from 'yup';
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 
 const userStore = useUserStore()
 const toast = useToast();
@@ -113,8 +113,19 @@ const { value: emailValue, errorMessage: emailErrorMessage } = useField('email')
 const { value: passwordValue, errorMessage: passwordErrorMessage } = useField('password');
 const { value: passwordConfirmValue, errorMessage: passwordConfirmErrorMessage } = useField('passwordConfirm');
 
-usernameValue.value = initialUsernameValue.value
-emailValue.value = initialEmailValue.value
+const setInitialValues = () => {
+    usernameValue.value = initialUsernameValue.value
+    emailValue.value = initialEmailValue.value
+}
+
+const updateInitialValues = () => {
+    initialUsernameValue.value = userStore.user.username
+    initialEmailValue.value = userStore.user.email
+}
+
+setInitialValues()
+
+const isNotEdited = computed(() => usernameValue.value !== initialUsernameValue.value || emailValue.value !== initialEmailValue.value)
 
 const baseURL = axios.defaults.baseURL;
 const uploadURL = `${baseURL}user/image`
@@ -136,11 +147,11 @@ const onSubmit = handleSubmit(async (values) => {
     loading.value = true;
     try {
         await schema.validate({ username, email, password, passwordConfirm }, { abortEarly: false });
-        status = await userStore.update(username, email, password)
-        if (usernameValue.value != initialUsernameValue.value && emailValue.value != initialEmailValue.value) resetForm();
+        status = await userStore.update(email, username, password)
+        updateInitialValues()
     } catch (error) {
         console.error(error)
-        if (usernameValue.value != initialUsernameValue.value && emailValue.value != initialEmailValue.value) resetForm();
+        setInitialValues()
     }
     finally {
         status ? showSuccessToast() : showFailToast(userStore.errorDetail)
